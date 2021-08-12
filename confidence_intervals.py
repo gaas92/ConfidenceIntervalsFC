@@ -14,20 +14,16 @@ import pandas as pd
 from time import time
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 import scipy.stats as stats
 from scipy.optimize import minimize
 
 
 import SLSQP_zfit
-import time
 
 import scipy
 from scipy.stats import binom
 
-import mplhep as hep
-plt.style.use([hep.style.ROOT, hep.style.firamath])
 zfit.util.cache.clear_graph_cache()
 
 # Model PDFs
@@ -239,8 +235,11 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
                           name='background_Gauss+Exp')
 
 
-    complete_signal = signal_mass*decay_eff
-    complete_background = background_mass*background_angular
+    #complete_signal = signal_mass*decay_eff # Antonio Original
+    complete_signal = zfit.pdf.ProductPDF(pdfs=[signal_mass, decay_eff], name='complete_signal')  # zFit-ization
+
+    #complete_background = background_mass*background_angular # Antonio Original
+    complete_background = zfit.pdf.ProductPDF(pdfs=[background_mass, background_angular], name='complete_background') # zFit-ization
 
 
     s_ini = 437 if not 'yield' in params['Signal'].keys() else int(params['Signal']['yield'])
@@ -248,14 +247,16 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
 
     Total = s_ini + b_ini
 
-    S = zfit.Parameter('signalYield', s_ini, 0, Total)
-    B = zfit.Parameter('backgroundYield', b_ini, 0, Total)
+    S = zfit.Parameter('signalYield', s_ini, 0, Total*1.5)
+    B = zfit.Parameter('backgroundYield', b_ini, 0, Total*1.5)
 
     signal_extended = complete_signal.create_extended(yield_=S)
     background_extended = complete_background.create_extended(yield_=B)
 
-    complete_pdf = signal_extended+background_extended
-    print(complete_pdf.get_params())
+    #complete_pdf = signal_extended+background_extended # Antonio Original
+    complete_pdf = zfit.pdf.SumPDF([signal_extended, background_extended], name='complete_pdf') # zFit-ization
+    
+    #print(complete_pdf.get_params())
     
     #N = 50 # Number of toy MC
     
@@ -270,7 +271,8 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
     
     
     Delta_chi2 = []
-    sampler = complete_pdf.create_sampler(n=Total, fixed_params=True)
+    #sampler = complete_pdf.create_sampler(n=Total, fixed_params=True)
+    sampler = complete_pdf.create_sampler(fixed_params=True)
     nll_best = zfit.loss.ExtendedUnbinnedNLL(model=complete_pdf, data=sampler)
     nll_profile = zfit.loss.ExtendedUnbinnedNLL(model=complete_pdf, data=sampler)
 
@@ -297,7 +299,6 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
         if i%2 ==0:
             zfit.util.cache.clear_graph_cache()
         
-    #print(plt.hist(Delta_chi2))
     
     # Delta chi2 data
     
@@ -308,24 +309,17 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
     nll_obs_best = zfit.loss.ExtendedUnbinnedNLL(model=complete_pdf, data=real_data)
     result_obs_best = SLSQP_FULL.minimize(nll_obs_best)
     b_likelihood = nll_obs_best.value().numpy()
-    
-    #print(b_likelihood)
-    
+       
     fh.set_value(FH)
     S.set_value(s_ini)
-    B.set_value(b_ini)
-        
+    B.set_value(b_ini)     
 
     nll_obs_profile = zfit.loss.ExtendedUnbinnedNLL(model=complete_pdf, data=real_data)
     result_obs_profile = SLSQP_FULL_profile.minimize(nll_obs_profile, params=(S,B))
     p_likelihood = nll_obs_profile.value().numpy()
     
-    #print(p_likelihood)
-    
-    
     Delta_data = p_likelihood - b_likelihood
     
-    #print(Delta_data)
     
     factor = []
     

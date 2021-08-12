@@ -2,7 +2,6 @@
 .DS_Store
 *.pyc
 *.idea/workspace.xml
-*.ipynb_checkpoints
 
 # Created by https://www.gitignore.io/api/visualstudiocode
 # Edit at https://www.gitignore.io/?templates=visualstudiocode
