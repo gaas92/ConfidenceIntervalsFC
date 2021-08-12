@@ -1,6 +1,12 @@
+
+#ONLY TO FORCE RUN IN CPU
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"   
+
 import tensorflow as tf
 import zfit
 from zfit import z
+
 
 import random
 import json
@@ -16,13 +22,13 @@ from scipy.optimize import minimize
 
 import SLSQP_zfit
 import time
-#import progressbar # quitar
 
 import scipy
 from scipy.stats import binom
 
 import mplhep as hep
 plt.style.use([hep.style.ROOT, hep.style.firamath])
+zfit.util.cache.clear_graph_cache()
 
 # Model PDFs
 class Angular_PDF(zfit.pdf.BasePDF):
@@ -254,17 +260,6 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
     #N = 50 # Number of toy MC
     
     pseudo_data = []
-    
-    for i in range(N):
-        
-        sampler = complete_pdf.create_sampler(n=Total, fixed_params=True)
-        sampler.resample()
-        pseudo_data.append(sampler)
-        
-        if i%2 ==0:
-                zfit.util.cache.clear_graph_cache()
-
-    
     constAngParams_Full = ({'type': 'ineq', 'fun': lambda x:  x[2]},
                        {'type': 'ineq', 'fun': lambda x:  3-x[2]}) 
 
@@ -275,26 +270,24 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
     
     
     Delta_chi2 = []
-        
+    sampler = complete_pdf.create_sampler(n=Total, fixed_params=True)
+    nll_best = zfit.loss.ExtendedUnbinnedNLL(model=complete_pdf, data=sampler)
+    nll_profile = zfit.loss.ExtendedUnbinnedNLL(model=complete_pdf, data=sampler)
+
     for i in range(N):
         
+        sampler.resample()
         fh.set_value(FH)
         S.set_value(s_ini)
         B.set_value(b_ini)
-        
-        data = pseudo_data[i]
-        
-        nll_best = zfit.loss.ExtendedUnbinnedNLL(model=complete_pdf, data=data)
+                
         result_best = SLSQP_FULL.minimize(nll_best)
         best_likelihood = nll_best.value().numpy() 
-
-        
         
         fh.set_value(FH)
         S.set_value(s_ini)
         B.set_value(b_ini)
         
-        nll_profile = zfit.loss.ExtendedUnbinnedNLL(model=complete_pdf, data=data)
         result_profile = SLSQP_FULL_profile.minimize(nll_profile, params=(S,B))
         profile_likelihood = nll_profile.value().numpy() 
     
@@ -304,7 +297,7 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
         if i%2 ==0:
             zfit.util.cache.clear_graph_cache()
         
-    print(plt.hist(Delta_chi2))
+    #print(plt.hist(Delta_chi2))
     
     # Delta chi2 data
     
@@ -316,7 +309,7 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
     result_obs_best = SLSQP_FULL.minimize(nll_obs_best)
     b_likelihood = nll_obs_best.value().numpy()
     
-    print(b_likelihood)
+    #print(b_likelihood)
     
     fh.set_value(FH)
     S.set_value(s_ini)
@@ -327,12 +320,12 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
     result_obs_profile = SLSQP_FULL_profile.minimize(nll_obs_profile, params=(S,B))
     p_likelihood = nll_obs_profile.value().numpy()
     
-    print(p_likelihood)
+    #print(p_likelihood)
     
     
     Delta_data = p_likelihood - b_likelihood
     
-    print(Delta_data)
+    #print(Delta_data)
     
     factor = []
     
