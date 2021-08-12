@@ -99,7 +99,7 @@ class JohnsonSU(zfit.models.dist_tfp.WrapDistribution):
         
 
     
-def cl_function(real_data, FH=0.24, params=None, N=50):
+def cl_function(real_data, FH=0.24, params=None, N=1000):
     
     
     """Function that return a 1-CL point for a given:
@@ -271,8 +271,10 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
     
     
     Delta_chi2 = []
+    zfit.util.cache.clear_graph_cache()
     #sampler = complete_pdf.create_sampler(n=Total, fixed_params=True)
     sampler = complete_pdf.create_sampler(fixed_params=True)
+
     nll_best = zfit.loss.ExtendedUnbinnedNLL(model=complete_pdf, data=sampler)
     nll_profile = zfit.loss.ExtendedUnbinnedNLL(model=complete_pdf, data=sampler)
 
@@ -296,12 +298,11 @@ def cl_function(real_data, FH=0.24, params=None, N=50):
         Delta = profile_likelihood - best_likelihood
         Delta_chi2.append(Delta)
         
-        if i%2 ==0:
+        if i%100 ==0:
             zfit.util.cache.clear_graph_cache()
         
-    
     # Delta chi2 data
-    
+    zfit.util.cache.clear_graph_cache()
     fh.set_value(FH)
     S.set_value(s_ini)
     B.set_value(b_ini)

@@ -16,6 +16,7 @@ parser.add_argument ('--version', '-v', default='test', help='Version name.')
 parser.add_argument('--Bin',  '-B', default=4,    type=int, help='an integer for the Bin to analyze')
 parser.add_argument('--nToy', '-N', default=1000, type=int, help='an integer for the number of toy MC to run for every 1-cl calculation (more takes longer but has a smooth 1-cl graph)')
 parser.add_argument('--FH', '-FH',  default=0.0, type=float, help='floating fh true-value to calculate 1-cl')
+parser.add_argument('--Step', '-Step',  default=1, type=int, help='int for the step in the FH region')
 parser.add_argument('--Save', '-S', default=1, type=int, help='save in CERNBOX, false only for testing')
 
 args = parser.parse_args()
@@ -34,11 +35,12 @@ def analyzeFH():
     real_data_df = pd.read_csv(f'Bin{args.Bin}/Data.csv')
     real_data = zfit.Data.from_pandas(real_data_df)
 
-    fh, one_cl = cl_function(FH=args.FH, params=params, real_data=real_data)
+    fh, one_cl = cl_function(FH=args.FH, params=params, real_data=real_data, N=args.nToy)
     
 
     if args.Save == 1 :
-        None
+        with open(f'Bin{args.Bin}/toyMCresults/Step{args.Step}_FH{args.FH}_NtoyMC{args.nToy}.txt', 'w') as sf:
+            sf.write(f'{fh}, {one_cl}')
     else :
         print('False Save')
         print(f'FH = {fh} , 1-cl = {one_cl}')
