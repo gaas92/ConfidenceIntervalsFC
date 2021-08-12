@@ -27,7 +27,9 @@ if args.HELP:
 
 def analyzeFH():
     from confidence_intervals import cl_function
-    import pandas as pd
+    import pandas as pd 
+    
+    start = timer()
     with open(f'Bin{args.Bin}/fitParams.json') as f:
         params = json.load(f)
     
@@ -36,11 +38,12 @@ def analyzeFH():
     real_data = zfit.Data.from_pandas(real_data_df)
 
     fh, one_cl = cl_function(FH=args.FH, params=params, real_data=real_data, N=args.nToy)
-    
+    end = timer()
+
 
     if args.Save == 1 :
         with open(f'Bin{args.Bin}/toyMCresults/Step{args.Step}_FH{args.FH}_NtoyMC{args.nToy}.txt', 'w') as sf:
-            sf.write(f'{fh}, {one_cl}')
+            sf.write(f'{fh}, {one_cl}, {(end - start):.4f}')
     else :
         print('False Save')
         print(f'FH = {fh} , 1-cl = {one_cl}')
