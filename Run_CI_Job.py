@@ -18,7 +18,7 @@ parser.add_argument('--nToy', '-N', default=1000, type=int, help='an integer for
 parser.add_argument('--FH', '-FH',  default=0.0, type=float, help='floating fh true-value to calculate 1-cl')
 parser.add_argument('--Step', '-Step',  default=1, type=int, help='int for the step in the FH region')
 parser.add_argument('--Save', '-S', default=1, type=int, help='save in CERNBOX, false only for testing')
-parser.add_argument('--verbose', '-v', default=0, type=int, help='int for the verbosity level')
+parser.add_argument('--verbose', default=0, type=int, help='int for the verbosity level')
 
 args = parser.parse_args()
 if args.HELP:
