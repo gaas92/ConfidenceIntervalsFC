@@ -18,6 +18,7 @@ parser.add_argument('--nToy', '-N', default=1000, type=int, help='an integer for
 parser.add_argument('--FH', '-FH',  default=0.0, type=float, help='floating fh true-value to calculate 1-cl')
 parser.add_argument('--Step', '-Step',  default=1, type=int, help='int for the step in the FH region')
 parser.add_argument('--Save', '-S', default=1, type=int, help='save in CERNBOX, false only for testing')
+parser.add_argument('--verbose', '-v', default=0, type=int, help='int for the verbosity level')
 
 args = parser.parse_args()
 if args.HELP:
@@ -37,7 +38,7 @@ def analyzeFH():
     real_data_df = pd.read_csv(f'Bin{args.Bin}/Data.csv')
     real_data = zfit.Data.from_pandas(real_data_df)
 
-    fh, one_cl = cl_function(FH=args.FH, params=params, real_data=real_data, N=args.nToy)
+    fh, one_cl = cl_function(FH=args.FH, params=params, real_data=real_data, N=args.nToy, verbose=args.verbose)
     end = timer()
 
 
@@ -57,5 +58,4 @@ if __name__ == "__main__":
     start = timer()
     analyzeFH()
     end = timer()
-    print(f'took {(end - start):.4f} seconds')
-    print('main ok')
+    print(f'FH/1-cl calulation ok,  took {(end - start):.4f} seconds')

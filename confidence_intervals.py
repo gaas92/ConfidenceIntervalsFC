@@ -99,7 +99,7 @@ class JohnsonSU(zfit.models.dist_tfp.WrapDistribution):
         
 
     
-def cl_function(real_data, FH=0.24, params=None, N=1000):
+def cl_function(real_data, FH=0.24, params=None, N=50, verbose=0):
     
     
     """Function that return a 1-CL point for a given:
@@ -298,6 +298,12 @@ def cl_function(real_data, FH=0.24, params=None, N=1000):
         Delta = profile_likelihood - best_likelihood
         Delta_chi2.append(Delta)
         
+        if verbose:
+            print(f'Toy MC {N} ok')
+            if verbose > 1:
+                print(f'\tbest_likelihood    = {best_likelihood}')
+                print(f'\tprofile_likelihood = {FH}')
+                print(f'\tDelta              = {FH}')
         if i%100 ==0:
             zfit.util.cache.clear_graph_cache()
         
