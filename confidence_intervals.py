@@ -299,11 +299,11 @@ def cl_function(real_data, FH=0.24, params=None, N=50, verbose=0):
         Delta_chi2.append(Delta)
         
         if verbose:
-            print(f'Toy MC {N} ok')
+            print(f'Toy MC {i} ok')
             if verbose > 1:
                 print(f'\tbest_likelihood    = {best_likelihood}')
-                print(f'\tprofile_likelihood = {FH}')
-                print(f'\tDelta              = {FH}')
+                print(f'\tprofile_likelihood = {profile_likelihood}')
+                print(f'\tDelta              = {Delta}')
         if i%100 ==0:
             zfit.util.cache.clear_graph_cache()
         
