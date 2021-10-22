@@ -1,0 +1,9 @@
+Log for the job 
+Minimizer results: 
+	FH Minuit: 0.9683987171576919
+	FH Minuit error: 0.631971777190793
+	FH SLSQP: 0.9684257646521865
+	FH SLSQP error: 0.6319779015521964
+job took 744.3585 seconds 
+nToy MC per 1-cl point: 50 
+n of FH ponts for coverage: 10

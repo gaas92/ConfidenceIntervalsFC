@@ -297,10 +297,10 @@ def complete_PDF(mass_obs=None, ang_obs=None, fh=None, params=None, name='comple
     background_mass = mass_background_pdf(params=params, mass_obs=mass_obs)
 
     #complete_signal = signal_mass*decay_eff # Antonio Original
-    complete_signal = zfit.pdf.ProductPDF(pdfs=[signal_mass, decay_eff], name='complete_signal')  # zFit-ization
+    complete_signal = zfit.pdf.ProductPDF(pdfs=[signal_mass, decay_eff], name=name+'_signal')  # zFit-ization
 
     #complete_background = background_mass*background_angular # Antonio Original
-    complete_background = zfit.pdf.ProductPDF(pdfs=[background_mass, background_angular], name='complete_background') # zFit-ization
+    complete_background = zfit.pdf.ProductPDF(pdfs=[background_mass, background_angular], name=name+'background') # zFit-ization
 
     if SigYield is None or BkgYield is None:
         s_ini = 437 if not 'yield' in params['Signal'].keys() else int(params['Signal']['yield'])
@@ -318,6 +318,6 @@ def complete_PDF(mass_obs=None, ang_obs=None, fh=None, params=None, name='comple
     background_extended = complete_background.create_extended(yield_=B)
 
     #complete_pdf = signal_extended+background_extended # Antonio Original
-    complete_pdf = zfit.pdf.SumPDF([signal_extended, background_extended], name='complete_pdf') # zFit-ization
+    complete_pdf = zfit.pdf.SumPDF([signal_extended, background_extended], name=name) # zFit-ization
 
     return complete_pdf

@@ -28,7 +28,7 @@ zfit.util.cache.clear_graph_cache()
 
 from complete_PDF import complete_PDF
 
-def cl_function(real_data, FH=0.24, params=None, N=50, verbose=0):
+def cl_function(real_data, FH=0.24, params=None, N=50, verbose=0, index=None):
     
     
     """Function that return a 1-CL point for a given:
@@ -65,19 +65,31 @@ def cl_function(real_data, FH=0.24, params=None, N=50, verbose=0):
     cos = zfit.Space(obs='cosThetaKMu', limits=[0.0,1.0])
     mass = zfit.Space(obs='BMass', limits=[5.0,6.0])
 
+    if index is None:
+        fh = zfit.Parameter('F_HH', FH, lower_limit=0.0, upper_limit=3.0)  
+        s_ini = 437 if not 'yield' in params['Signal'].keys() else int(params['Signal']['yield'])
+        b_ini = 706 if not 'yield' in params['Background'].keys() else int(params['Background']['yield'])
 
-    fh = zfit.Parameter('F_HH', FH, lower_limit=0.0, upper_limit=3.0)  
-    s_ini = 437 if not 'yield' in params['Signal'].keys() else int(params['Signal']['yield'])
-    b_ini = 706 if not 'yield' in params['Background'].keys() else int(params['Background']['yield'])
+        Total = s_ini + b_ini
 
-    Total = s_ini + b_ini
+        S = zfit.Parameter('signalYield', s_ini, 0, Total*1.5)
+        B = zfit.Parameter('backgroundYield', b_ini, 0, Total*1.5)
 
-    S = zfit.Parameter('signalYield', s_ini, 0, Total*1.5)
-    B = zfit.Parameter('backgroundYield', b_ini, 0, Total*1.5)
+        complete_pdf = complete_PDF(mass_obs=mass, ang_obs=cos, fh=fh, params=params, 
+                                    SigYield=S, BkgYield=B)
+    else:
+        fh = zfit.Parameter(f'F_HH_{index}', FH, lower_limit=0.0, upper_limit=3.0)  
+        s_ini = 437 if not 'yield' in params['Signal'].keys() else int(params['Signal']['yield'])
+        b_ini = 706 if not 'yield' in params['Background'].keys() else int(params['Background']['yield'])
 
-    complete_pdf = complete_PDF(mass_obs=mass, ang_obs=cos, fh=fh, params=params, 
-                                SigYield=S, BkgYield=B)
-    
+        Total = s_ini + b_ini
+
+        S = zfit.Parameter(f'signalYield_{index}', s_ini, 0, Total*1.5)
+        B = zfit.Parameter(f'backgroundYield_{index}', b_ini, 0, Total*1.5)
+
+        complete_pdf = complete_PDF(mass_obs=mass, ang_obs=cos, fh=fh, params=params, 
+                                    SigYield=S, BkgYield=B)
+
     #print(complete_pdf.get_params())
     
     #N = 50 # Number of toy MC
