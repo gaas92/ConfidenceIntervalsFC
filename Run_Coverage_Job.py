@@ -14,9 +14,9 @@ parser.add_argument ('--HELP',    '-H', default=False,  action='store_true', hel
 parser.add_argument ('--version', '-v', default='test', help='Version name.')
 
 #parser.add_argument('--Bin',  '-B', default=4,    type=int, help='an integer for the Bin to analyze')
-parser.add_argument('--nToy', '-N', default=500, type=int, help='an integer for the number of toy MC to run for every 1-cl calculation (more takes longer but has a smooth 1-cl graph)')
+parser.add_argument('--nToy', '-N', default=5, type=int, help='an integer for the number of toy MC to run for every 1-cl calculation (more takes longer but has a smooth 1-cl graph)')
 parser.add_argument('--FH', '-FH',  default=0.2, type=float, help='floating fh true-value to calculate Toy & calculate the coverage')
-parser.add_argument('--granularity', '-G', default=0.05, type=float, help='floating value for the step size')
+parser.add_argument('--granularity', '-G', default=0.1, type=float, help='floating value for the step size')
 parser.add_argument('--range', '-R', default=[0.0, 3.0], type=list, help='list of two values for the FH range')
 #parser.add_argument('--Step', '-Step',  default=1, type=int, help='int for the step in the FH region')
 parser.add_argument('--Save', '-S', default=1, type=int, help='save in CERNBOX, false only for testing')
