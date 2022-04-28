@@ -2,6 +2,8 @@ import argparse
 import json 
 from timeit import default_timer as timer
 
+import os
+
 import zfit
 zfit.util.cache.clear_graph_cache()
 
@@ -11,7 +13,7 @@ parser = argparse.ArgumentParser(description='Script used to run on HTCondor con
                                  add_help=True)
 
 parser.add_argument ('--HELP',    '-H', default=False,  action='store_true', help='Print help message.')
-parser.add_argument ('--version', '-v', default='test', help='Version name.')
+parser.add_argument ('--version', '-v', default='', help='Version name.')
 
 parser.add_argument('--Bin',  '-B', default=4,    type=int, help='an integer for the Bin to analyze')
 parser.add_argument('--nToy', '-N', default=1000, type=int, help='an integer for the number of toy MC to run for every 1-cl calculation (more takes longer but has a smooth 1-cl graph)')
@@ -31,7 +33,7 @@ def analyzeFH():
     import pandas as pd 
     
     start = timer()
-    with open(f'Bin{args.Bin}/fitParams.json') as f:
+    with open(f'Nominal_RW_zFit/Bin{args.Bin}/fitParams.json') as f:
         params = json.load(f)
     
 
@@ -43,7 +45,8 @@ def analyzeFH():
 
 
     if args.Save == 1 :
-        with open(f'Bin{args.Bin}/toyMCresults/Step{args.Step}_FH{args.FH}_NtoyMC{args.nToy}.txt', 'w') as sf:
+        os.makedirs(f'Nominal_RW_zFit/Bin{args.Bin}/toyMCresults', exist_ok=True)
+        with open(f'Nominal_RW_zFit/Bin{args.Bin}/toyMCresults/Step{args.Step}_FH{args.FH}_NtoyMC{args.nToy}.txt', 'w') as sf:
             sf.write(f'{fh}, {one_cl}, {(end - start):.4f}')
     else :
         print('False Save')
