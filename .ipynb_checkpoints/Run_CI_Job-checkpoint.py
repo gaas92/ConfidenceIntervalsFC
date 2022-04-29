@@ -37,7 +37,7 @@ def analyzeFH():
         params = json.load(f)
     
 
-    real_data_df = pd.read_csv(f'Bin{args.Bin}/Data.csv')
+    real_data_df = pd.read_csv(f'Nominal_RW_zFit/Bin{args.Bin}/Data.csv')
     real_data = zfit.Data.from_pandas(real_data_df)
 
     fh, one_cl = cl_function(FH=args.FH, params=params, real_data=real_data, N=args.nToy, verbose=args.verbose)
