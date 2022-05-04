@@ -33,11 +33,11 @@ def analyzeFH():
     import pandas as pd 
     
     start = timer()
-    with open(f'Nominal_RW_zFit/Bin{args.Bin}/fitParams.json') as f:
+    with open(f'Nominal_AR_RW_zFit/Bin{args.Bin}/fitParams.json') as f:
         params = json.load(f)
     
 
-    real_data_df = pd.read_csv(f'Nominal_RW_zFit/Bin{args.Bin}/Data.csv')
+    real_data_df = pd.read_csv(f'Nominal_AR_RW_zFit/Bin{args.Bin}/Data.csv')
     real_data = zfit.Data.from_pandas(real_data_df)
 
     fh, one_cl = cl_function(FH=args.FH, params=params, real_data=real_data, N=args.nToy, verbose=args.verbose)
@@ -45,8 +45,8 @@ def analyzeFH():
 
 
     if args.Save == 1 :
-        os.makedirs(f'Nominal_RW_zFit/Bin{args.Bin}/toyMCresults', exist_ok=True)
-        with open(f'Nominal_RW_zFit/Bin{args.Bin}/toyMCresults/Step{args.Step}_FH{args.FH}_NtoyMC{args.nToy}.txt', 'w') as sf:
+        os.makedirs(f'Nominal_AR_RW_zFit/Bin{args.Bin}/toyMCresults', exist_ok=True)
+        with open(f'Nominal_AR_RW_zFit/Bin{args.Bin}/toyMCresults/Step{args.Step}_FH{args.FH}_NtoyMC{args.nToy}.txt', 'w') as sf:
             sf.write(f'{fh}, {one_cl}, {(end - start):.4f}')
     else :
         print('False Save')
